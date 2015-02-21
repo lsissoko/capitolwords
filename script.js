@@ -1,4 +1,11 @@
 var main = function() {
+  // adding trim() to String objects
+  if(typeof(String.prototype.trim) === "undefined") {
+    String.prototype.trim = function() {
+      return String(this).replace(/^\s+|\s+$/g, '');
+    };
+  }
+
   function search(_phrase, year) {
     var query_params = {
       apikey: "f6ab5f2e4f69444b9f2c0a44d9a5223d",
@@ -17,16 +24,22 @@ var main = function() {
     );
   }
 
+
   $(":input[name=phrase]").keyup(function(e){
     if(e.keyCode === 13){
       $("#enter").click();
     }
   });
 
+
   $("#enter").click(function(e) {
     e.preventDefault();
 
     var phrase = $(":input[name=phrase]").val();
+    if (phrase.trim().length === 0) {
+      return;
+    }
+
     var lineData = [];
     var MIN = 1996;
     var MAX = 2015;
