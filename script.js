@@ -50,8 +50,7 @@ var main = function() {
     for (var i=MIN; i<=MAX; i++) {
       if (i === MAX) {
         search(phrase, i).done(processMax);
-      }
-      else {
+      } else {
         search(phrase, i).done(process);
       }
     }

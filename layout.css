@@ -9,7 +9,6 @@ html, body {
    height: auto !important;
    height: 100%;
    margin: 0 auto -4em;
-
    position: relative;
    width: 1000px;
    text-align: center;
@@ -27,8 +26,4 @@ p {
 }
 h1, h2, h3, h4, h5, h6 {
   padding: 0 0 0.4em;
-}
-
-canvas {
-   display: inline;
 }
