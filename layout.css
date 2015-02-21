@@ -1,0 +1,34 @@
+* {
+   margin: 0;
+}
+html, body {
+   height: 100%;
+}
+.wrapper {
+   min-height: 100%;
+   height: auto !important;
+   height: 100%;
+   margin: 0 auto -4em;
+
+   position: relative;
+   width: 1000px;
+   text-align: center;
+}
+.footer, .push {
+   height: 4em;
+}
+
+.footer {
+   text-align: center;
+}
+
+p {
+  padding: 0 0 1em;
+}
+h1, h2, h3, h4, h5, h6 {
+  padding: 0 0 0.4em;
+}
+
+canvas {
+   display: inline;
+}
