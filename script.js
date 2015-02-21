@@ -1,4 +1,7 @@
 var main = function() {
+  var MIN_YEAR = 1996;
+  var MAX_YEAR = new Date().getFullYear();
+
   // adding trim() to String objects
   if(typeof(String.prototype.trim) === "undefined") {
     String.prototype.trim = function() {
@@ -41,8 +44,6 @@ var main = function() {
     }
 
     var lineData = [];
-    var MIN = 1996;
-    var MAX = 2015;
 
     var process = function(data) {
       lineData.push({
@@ -60,8 +61,8 @@ var main = function() {
       chart(lineData, phrase);
     };
     
-    for (var i=MIN; i<=MAX; i++) {
-      if (i === MAX) {
+    for (var i=MIN_YEAR; i<=MAX_YEAR; i++) {
+      if (i === MAX_YEAR) {
         search(phrase, i).done(processMax);
       } else {
         search(phrase, i).done(process);
@@ -86,7 +87,7 @@ var main = function() {
     var ctx = $("#myChart").get(0).getContext("2d");
 
     var _labels = [];
-    for (var i=1996; i<=2015; i++) {
+    for (var i=MIN_YEAR; i<=MAX_YEAR; i++) {
       _labels.push(i);
     }
 
