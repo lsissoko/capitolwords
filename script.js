@@ -10,26 +10,24 @@ var main = function() {
   }
 
   function search(_phrase, year) {
-    var query_params = {
-      apikey: "f6ab5f2e4f69444b9f2c0a44d9a5223d",
-      phrase: _phrase,
-      start_date: "" + year + "-01-01",
-      end_date: "" + year + "-12-31",
-      sort: "date asc"
-    };
-    
     return $.ajax(
       "http://capitolwords.org/api/text.json", {
-        data: query_params,
         type: "GET",
-        dataType: "jsonp"
+        dataType: "jsonp",
+        data: {
+          apikey: "f6ab5f2e4f69444b9f2c0a44d9a5223d",
+          phrase: _phrase,
+          start_date: "" + year + "-01-01",
+          end_date: "" + year + "-12-31",
+          sort: "date asc"
+        }
       }
     );
   }
 
 
   $(":input[name=phrase]").keyup(function(e){
-    if(e.keyCode === 13){
+    if(e.keyCode === 13) {
       $("#enter").click();
     }
   });
@@ -80,6 +78,8 @@ var main = function() {
     graphTitleFontSize: 18,
     graphMin : 0,
     yAxisMinimumInterval : 5,
+    xAxisLabel : "Year",
+    yAxisLabel : "Mentions"
   }
 
 
@@ -136,8 +136,6 @@ var main = function() {
     };
 
     chartOptions["graphTitle"] = phrase;
-    chartOptions["xAxisLabel"] = "Year";
-    chartOptions["yAxisLabel"] = "Mentions";
     new Chart(ctx).Line(data, chartOptions);
   }
 
