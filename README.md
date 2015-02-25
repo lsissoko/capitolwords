@@ -5,7 +5,7 @@ Search for a word or phrase's frequency in the Congressional Record (dating back
 
 #### Built With
 * [Capitol Words API](http://sunlightlabs.github.io/Capitol-Words/)
-* [ChartNew.js](https://github.com/FVANCOP/ChartNew.js/)
+* [Highcharts JS](http://www.highcharts.com/products/highcharts)
 
 ### Examples
 ![war](https://raw.githubusercontent.com/primeape91/capitolwords/master/images/capitolwords_search_war.png)

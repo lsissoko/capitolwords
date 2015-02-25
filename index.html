@@ -11,10 +11,11 @@
     <br>
     <h4>Search the Congressional Record:</h4>
     <p>
-      <input type="text" name="phrase" value="" required placeholder="Enter a word or phrase">
+      <input type="text" name="phrase" value="congress" required placeholder="Enter a word or phrase">
       <button id="enter">Search</button>
     </p>
-    <canvas id="myChart" width="1000" height="400"></canvas>
+    <br>
+    <div id="chart-container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
     <div class="push"></div>
   </div>
   <div class="footer">
@@ -25,7 +26,7 @@
     </p>
   </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-    <script src="ChartNew.js"></script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

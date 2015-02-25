@@ -1,6 +1,8 @@
 var main = function() {
+  // global vars
   var MIN_YEAR = 1996;
   var MAX_YEAR = new Date().getFullYear();
+
 
   // adding trim() to String objects
   if(typeof(String.prototype.trim) === "undefined") {
@@ -8,6 +10,7 @@ var main = function() {
       return String(this).replace(/^\s+|\s+$/g, '');
     };
   }
+
 
   function search(_phrase, year) {
     return $.ajax(
@@ -55,7 +58,12 @@ var main = function() {
         x: parseInt(data.results[0].date.substring(0,4)),
         y: data.num_found
       });
-      
+
+      chart(lineData, phrase);
+    };
+
+    var hello = function(data) {
+      console.log(lineData);
       chart(lineData, phrase);
     };
     
@@ -69,78 +77,66 @@ var main = function() {
   });
 
 
-  var chartOptions = {
-    canvasBorders : true,
-    canvasBordersWidth : 1,
-    canvasBordersColor : "black",
-    legend : true,
-    inGraphDataShow : true,
-    graphTitleFontSize: 18,
-    graphMin : 0,
-    yAxisMinimumInterval : 5,
-    xAxisLabel : "Year",
-    yAxisLabel : "Mentions"
-  }
-
-
-  function emptyChart() {
-    var ctx = $("#myChart").get(0).getContext("2d");
-
-    var _labels = [];
-    for (var i=MIN_YEAR; i<=MAX_YEAR; i++) {
-      _labels.push(i);
+  function chart(lineData, phrase) {
+    // missing points
+    for (var k=MIN_YEAR; k<=MAX_YEAR; k++) {
+      var found = false;
+      for(var j = 0; j < lineData.length; j++) {
+        if (lineData[j]["x"] === k) {
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        console.log(k + " not found");
+        lineData.push({ x: k, y: 0});
+      }
     }
 
-    var data = {
-      labels : _labels,
-      datasets : [
-        {
-          fillColor : "#fff",
-          strokeColor : "#fff",
-          pointColor : "#fff",
-          pointStrokeColor : "#fff",
-          data : [{x: 0, y: 0}]
-        }
-      ]
-    };
-
-    new Chart(ctx).Line(data, chartOptions);
-  }
-
-
-  function chart(lineData, phrase) {
-    var ctx = $("#myChart").get(0).getContext("2d");
-    
     lineData.sort(function(a, b) {
-      return a.x - b.x;
+      return a["x"] - b["x"];
     });
 
     var _labels = [];
     var _data = [];
     $.each(lineData, function(i, item) {
-      _labels.push(item.x);
-      _data.push(item.y);
+      _labels.push(item["x"]);
+      _data.push(item["y"]);
     });
 
-    var data = {
-      labels: _labels,
-      datasets: [
-        {
-          fillColor : "rgba(151,187,205,0.5)",
-          strokeColor : "rgba(151,187,205,1)",
-          pointColor : "rgba(151,187,205,1)",
-          pointStrokeColor : "#fff",
-          data: _data
+    $("#chart-container").highcharts({
+      chart: {
+        type: "line"
+      },
+      title: {
+        text: phrase
+      },
+      xAxis: {
+        categories: _labels
+      },
+      yAxis: {
+        title: {
+          text: "Number of Mentions"
+        },
+        floor: 0
+      },
+      plotOptions: {
+        line: {
+          enableMouseTracking: true
         }
-      ]
-    };
-
-    chartOptions["graphTitle"] = phrase;
-    new Chart(ctx).Line(data, chartOptions);
+      },
+      series: [{
+        name: phrase,
+        data: _data
+      }],
+      credits: {
+        enabled: false
+      }
+    });
   }
 
-  // init empty chart
-  emptyChart();
+  // show results for "congress"
+  $("#enter").click();
 };
 
 $(document).ready(main);
