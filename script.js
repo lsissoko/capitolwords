@@ -73,7 +73,7 @@ $(document).ready(function() {
         // sort data by year
         lineData.sort(function(a, b) {
             return a.x - b.x;
-        })
+        });
 
         // put year and count data into separate arrays
         $.each(lineData, function(i, item) {
