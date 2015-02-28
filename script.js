@@ -8,42 +8,24 @@ $(document).ready(function() {
         };
     }
 
-    $(":input[name=phrase]").keyup(function(e) {
-        if (e.keyCode === 13) {
-            $("#enter").click();
+    function getSearchTerm() {
+        var qs = new QueryString();
+        var term = qs.value("term");
+        if (term === undefined) {
+            term = "congress";
+            var page_obj = {"html": window.location.href, "pageTitle": ""};
+            var url = window.location.href.split("?")[0] + "?term=congress";
+            window.history.pushState(page_obj, "", url);
         }
-    });
+        return term;
+    }
 
-    $("#enter").click(function(e) {
-        e.preventDefault();
-
-        var _phrase = $(":input[name=phrase]").val();
-        if (_phrase.trim().length === 0) {
-            return;
-        }
-
-        $.ajax(
-            "http://capitolwords.org/api/dates.json", {
-                type: "GET",
-                dataType: "jsonp",
-                data: {
-                    apikey: "f6ab5f2e4f69444b9f2c0a44d9a5223d",
-                    phrase: _phrase,
-                    percentages: true,
-                    granularity: "year"
-                }
-            }
-        ).done(function(data) {
-            chart(data.results, _phrase);
-        });
-    });
-
-    function chart(data, phrase) {
+    function chart(data, term) {
         var lineData = [];
         var xData = [];
         var yData = [];
 
-        // get years and counts from AJAX response data
+        // get the year and count data
         $.each(data, function(i, item) {
             lineData.push({
                 x: item.year,
@@ -51,7 +33,7 @@ $(document).ready(function() {
             });
         });
 
-        // deal with missing data points
+        // deal with any missing data points
         var MIN_YEAR = 1996;
         var MAX_YEAR = new Date().getFullYear();
         for (var k = MIN_YEAR; k <= MAX_YEAR; k++) {
@@ -70,12 +52,12 @@ $(document).ready(function() {
             }
         }
 
-        // sort data by year
+        // sort the data by year
         lineData.sort(function(a, b) {
             return a.x - b.x;
         });
 
-        // put year and count data into separate arrays
+        // put the year and count data into separate arrays
         $.each(lineData, function(i, item) {
             xData.push(item.x);
             yData.push(item.y);
@@ -87,7 +69,7 @@ $(document).ready(function() {
                 type: "line"
             },
             title: {
-                text: phrase
+                text: term
             },
             xAxis: {
                 categories: xData
@@ -104,7 +86,7 @@ $(document).ready(function() {
                 }
             },
             series: [{
-                name: phrase,
+                name: term,
                 data: yData
             }],
             credits: {
@@ -113,6 +95,56 @@ $(document).ready(function() {
         });
     }
 
-    // show default results ("congress") on page load
-    $("#enter").click();
+    function loadPage(term) {
+        if (term.length > 0) {
+            var baseUrl = window.location.href.split("?")[0];
+            var queryString = "?" + $.param({"term": term});
+            location.assign(baseUrl + queryString);
+        }
+    }
+
+    function search(term) {
+        $.ajax(
+            "http://capitolwords.org/api/dates.json", {
+                type: "GET",
+                dataType: "jsonp",
+                data: {
+                    apikey: "f6ab5f2e4f69444b9f2c0a44d9a5223d",
+                    phrase: term,
+                    percentages: true,
+                    granularity: "year"
+                }
+            }
+        ).done(function(data) {
+            chart(data.results, term);
+        });
+    }
+
+    $(":input[name=term]").keyup(function(e) {
+        // "ENTER" key
+        if (e.keyCode === 13) {
+            console.log("hello");
+            loadPage($(":input[name=term]").val().trim());
+        }
+    });
+
+    $("#enter").click(function(e) {
+        e.preventDefault();
+        loadPage($(":input[name=term]").val().trim());
+    });
+
+    ///////////////////////////////////////////////////////////////////////////
+    // MAIN
+    ///////////////////////////////////////////////////////////////////////////
+    
+    // get the search term from the query string
+    var searchTerm = getSearchTerm();
+    
+    // set the input field's value and placeholder
+    $(":input[name=term]")
+        .val(searchTerm)
+        .attr("placeholder", "Enter a word or phrase");
+    
+    // perform the search
+    search(searchTerm);
 });
