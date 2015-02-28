@@ -9,8 +9,7 @@ $(document).ready(function() {
     }
 
     function getSearchTerm() {
-        var qs = new QueryString();
-        var term = qs.value("term");
+        var term = (new QueryData())["term"];
         if (term === undefined) {
             term = "congress";
             var page_obj = {"html": window.location.href, "pageTitle": ""};
