@@ -1,8 +1,8 @@
-"use strict";
-
 $(document).ready(function() {
+    "use strict";
+
     function getSearchTerm() {
-        var term = (new QueryData())["term"];
+        var term = (new QueryData()).term;
         if (term === undefined) {
             term = "congress";
             var page_obj = {"html": window.location.href, "pageTitle": ""};
