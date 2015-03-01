@@ -1,13 +1,6 @@
 "use strict";
 
 $(document).ready(function() {
-    // add trim() to String objects
-    if (typeof(String.prototype.trim) === "undefined") {
-        String.prototype.trim = function() {
-            return String(this).replace(/^\s+|\s+$/g, "");
-        };
-    }
-
     function getSearchTerm() {
         var term = (new QueryData())["term"];
         if (term === undefined) {
@@ -123,13 +116,13 @@ $(document).ready(function() {
         // "ENTER" key
         if (e.keyCode === 13) {
             console.log("hello");
-            loadPage($(":input[name=term]").val().trim());
+            loadPage($.trim($(":input[name=term]").val()));
         }
     });
 
     $("#enter").click(function(e) {
         e.preventDefault();
-        loadPage($(":input[name=term]").val().trim());
+        loadPage($.trim($(":input[name=term]").val()));
     });
 
     ///////////////////////////////////////////////////////////////////////////
