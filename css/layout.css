@@ -20,6 +20,9 @@ html, body {
   width: 1000px;
   text-align: center;
 }
+body {
+  font-family: 'Source Sans Pro', sans-serif;
+}
 p {
   padding: 0 0 1em;
 }

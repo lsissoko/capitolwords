@@ -5,7 +5,10 @@ $(document).ready(function() {
         var term = (new QueryData()).term;
         if (term === undefined) {
             term = "congress";
-            var page_obj = {"html": window.location.href, "pageTitle": ""};
+            var page_obj = {
+                "html": window.location.href,
+                "pageTitle": ""
+            };
             var url = window.location.href.split("?")[0] + "?term=congress";
             window.history.pushState(page_obj, "", url);
         }
@@ -90,7 +93,9 @@ $(document).ready(function() {
     function loadPage(term) {
         if (term.length > 0) {
             var baseUrl = window.location.href.split("?")[0];
-            var queryString = "?" + $.param({"term": term});
+            var queryString = "?" + $.param({
+                "term": term
+            });
             location.assign(baseUrl + queryString);
         }
     }
@@ -128,15 +133,15 @@ $(document).ready(function() {
     ///////////////////////////////////////////////////////////////////////////
     // MAIN
     ///////////////////////////////////////////////////////////////////////////
-    
+
     // get the search term from the query string
     var searchTerm = getSearchTerm();
-    
+
     // set the input field's value and placeholder
     $(":input[name=term]")
         .val(searchTerm)
         .attr("placeholder", "Enter a word or phrase");
-    
+
     // perform the search
     search(searchTerm);
 });
