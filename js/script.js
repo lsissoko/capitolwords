@@ -1,61 +1,88 @@
 $(document).ready(function() {
     "use strict";
 
-    function getSearchTerm() {
-        var term = (new QueryData()).term;
-        if (term === undefined) {
-            term = "congress";
-            var page_obj = {
+    String.prototype.squish = function() {
+        return this.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, "").replace(/\s+/g, " ");
+    };
+
+    function getSearchTerms() {
+        var qd = new QueryData();
+        var termsArr = [];
+        $.each(qd, function(i, item) {
+            termsArr.push(item.squish());
+        });
+        var terms = termsArr.join(", ");
+
+        if (terms === "") {
+            terms = "obama, bush, clinton, the president";
+            var pageObj = {
                 "html": window.location.href,
                 "pageTitle": ""
             };
-            var url = window.location.href.split("?")[0] + "?term=congress";
-            window.history.pushState(page_obj, "", url);
+            var url = window.location.href.split("?")[0] + "?" + $.param({
+                "terms": terms
+            });
+            window.history.pushState(pageObj, "", url);
         }
-        return term;
+
+        return terms;
     }
 
-    function chart(data, term) {
-        var lineData = [];
-        var xData = [];
-        var yData = [];
-
-        // get the year and count data
-        $.each(data, function(i, item) {
-            lineData.push({
-                x: item.year,
-                y: item.count
-            });
-        });
-
-        // deal with any missing data points
+    function drawChart(data, term) {
+        var years = [];
+        var seriesData = [];
         var MIN_YEAR = 1996;
         var MAX_YEAR = new Date().getFullYear();
-        for (var k = MIN_YEAR; k <= MAX_YEAR; k++) {
-            var found = false;
-            for (var j = 0; j < lineData.length; j++) {
-                if (lineData[j].x === ("" + k)) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                lineData.push({
-                    x: k,
-                    y: 0
-                });
-            }
+
+        var y = MIN_YEAR;
+        while (y <= MAX_YEAR) {
+            years.push(y++);
         }
 
-        // sort the data by year
-        lineData.sort(function(a, b) {
-            return a.x - b.x;
-        });
+        $.each(data, function(i, termData) {
+            var curData = [];
+            var counts = [];
 
-        // put the year and count data into separate arrays
-        $.each(lineData, function(i, item) {
-            xData.push(item.x);
-            yData.push(item.y);
+            // get the current term's year and count data
+            $.each(termData.results, function(j, item) {
+                curData.push({
+                    x: item.year,
+                    y: item.count
+                });
+            });
+
+            // fill missing data (count = 0 for that year)
+            for (var year = MIN_YEAR; year <= MAX_YEAR; year++) {
+                var found = false;
+                for (var j = 0, l = curData.length; j < l; j++) {
+                    if (curData[j].x === ("" + year)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    curData.push({
+                        x: year,
+                        y: 0
+                    });
+                }
+            }
+
+            // sort the data by year
+            curData.sort(function(a, b) {
+                return a.x - b.x;
+            });
+
+            // put the count data in its own array
+            $.each(curData, function(j, item) {
+                counts.push(item.y);
+            });
+
+            // add new series object
+            seriesData.push({
+                name: termData.term,
+                data: counts
+            });
         });
 
         // draw the chart
@@ -67,7 +94,7 @@ $(document).ready(function() {
                 text: term
             },
             xAxis: {
-                categories: xData
+                categories: years
             },
             yAxis: {
                 title: {
@@ -80,54 +107,66 @@ $(document).ready(function() {
                     enableMouseTracking: true
                 }
             },
-            series: [{
-                name: term,
-                data: yData
-            }],
+            series: seriesData,
             credits: {
                 enabled: false
             }
         });
     }
 
-    function loadPage(term) {
-        if (term.length > 0) {
+    function loadPage(terms) {
+        if (terms.length > 0) {
             var baseUrl = window.location.href.split("?")[0];
             var queryString = "?" + $.param({
-                "term": term
+                "terms": terms
             });
             location.assign(baseUrl + queryString);
         }
     }
 
-    function search(term) {
-        $.ajax(
-            "http://capitolwords.org/api/dates.json", {
-                type: "GET",
-                dataType: "jsonp",
-                data: {
-                    apikey: "f6ab5f2e4f69444b9f2c0a44d9a5223d",
-                    phrase: term,
-                    percentages: true,
-                    granularity: "year"
-                }
-            }
-        ).done(function(data) {
-            chart(data.results, term);
+    function search(terms) {
+        var data = [];
+        var requests = [];
+        var termsArr = terms.split(", ");
+
+        $.each(termsArr, function(i, term) {
+            requests.push(
+                $.ajax({
+                    url: "http://capitolwords.org/api/dates.json",
+                    type: "GET",
+                    dataType: "jsonp",
+                    data: {
+                        apikey: "f6ab5f2e4f69444b9f2c0a44d9a5223d",
+                        phrase: term,
+                        percentages: true,
+                        granularity: "year"
+                    },
+                    success: function(r) {
+                        data = data.concat({
+                            "results": r.results,
+                            "term": term
+                        });
+                    }
+                })
+            );
+        });
+
+        $.when.apply(undefined, requests).then(function(r) {
+            drawChart(data);
         });
     }
 
-    $(":input[name=term]").keyup(function(e) {
+    $(":input[name=terms]").keyup(function(e) {
         // "ENTER" key
         if (e.keyCode === 13) {
             console.log("hello");
-            loadPage($.trim($(":input[name=term]").val()));
+            loadPage($.trim($(":input[name=terms]").val()));
         }
     });
 
     $("#enter").click(function(e) {
         e.preventDefault();
-        loadPage($.trim($(":input[name=term]").val()));
+        loadPage($.trim($(":input[name=terms]").val()));
     });
 
     ///////////////////////////////////////////////////////////////////////////
@@ -135,13 +174,11 @@ $(document).ready(function() {
     ///////////////////////////////////////////////////////////////////////////
 
     // get the search term from the query string
-    var searchTerm = getSearchTerm();
+    var searchTerms = getSearchTerms();
 
     // set the input field's value and placeholder
-    $(":input[name=term]")
-        .val(searchTerm)
-        .attr("placeholder", "Enter a word or phrase");
+    $(":input[name=terms]").val(searchTerms);
 
     // perform the search
-    search(searchTerm);
+    search(searchTerms);
 });

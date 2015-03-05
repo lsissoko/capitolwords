@@ -12,13 +12,21 @@
     <h2>Capitol Words</h2>
     <h3>powered by <a href="https://sunlightlabs.github.io/Capitol-Words/">Sunlight Labs</a></h3>
     <br>
-    <h4>Search the Congressional Record:</h4>
-    <p>
-      <input type="text" name="term" value="">
-      <button id="enter">Search</button>
-    </p>
+    <table>
+      <tr>
+        <td><h4>Enter some comma-separated phrases to search the Congressional Record:</h4></td>
+      </tr>
+      <tr>
+        <td>
+          <p>
+            <input type="text" name="terms" value="">
+            <button id="enter">Search</button>
+          </p>
+        </td>
+      </tr>
+    </table>
     <br>
-    <div id="chart-container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+    <div id="chart-container"></div>
     <div class="push"></div>
   </div>
   <div class="footer">

@@ -29,3 +29,18 @@ p {
 h1, h2, h3, h4, h5, h6 {
   padding: 0 0 0.4em;
 }
+table {
+  margin: 0 auto;
+  text-align: left;
+}
+input[name=terms] {
+  width: 400px;
+}
+#enter {
+  width: 100px;
+}
+#chart-container {
+  min-width: 310px;
+  height: 400px;
+  margin: 0 auto;
+}
