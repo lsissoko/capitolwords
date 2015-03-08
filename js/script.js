@@ -26,17 +26,9 @@ $(document).ready(function() {
         window.history.pushState(pageObj, "", url);
     }
 
-    function getQueryString() {
-        var qd = new QueryData();
-        var terms = [];
-        $.each(qd, function(i, item) {
-            terms.push(item.squish());
-        });
-        return terms.join(", ");
-    }
-
     function getSearchTerms() {
-        var terms = getQueryString();
+        // get the query string's value for the "terms" key
+        var terms = (new QueryData()).terms.squish();
         if (terms === "") {
             terms = "obama, bush, clinton, the president";
             addPageToHistory(terms);
