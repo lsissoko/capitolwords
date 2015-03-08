@@ -5,26 +5,42 @@ $(document).ready(function() {
         return this.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, "").replace(/\s+/g, " ");
     };
 
-    function getSearchTerms() {
-        var qd = new QueryData();
-        var termsArr = [];
-        $.each(qd, function(i, item) {
-            termsArr.push(item.squish());
-        });
-        var terms = termsArr.join(", ");
-
-        if (terms === "") {
-            terms = "obama, bush, clinton, the president";
-            var pageObj = {
-                "html": window.location.href,
-                "pageTitle": ""
-            };
-            var url = window.location.href.split("?")[0] + "?" + $.param({
+    function loadPage(terms) {
+        if (terms.length > 0) {
+            var baseUrl = window.location.href.split("?")[0];
+            var queryString = "?" + $.param({
                 "terms": terms
             });
-            window.history.pushState(pageObj, "", url);
+            location.assign(baseUrl + queryString);
         }
+    }
 
+    function addPageToHistory(terms) {
+        var pageObj = {
+            "html": window.location.href,
+            "pageTitle": ""
+        };
+        var url = window.location.href.split("?")[0] + "?" + $.param({
+            "terms": terms
+        });
+        window.history.pushState(pageObj, "", url);
+    }
+
+    function getQueryString() {
+        var qd = new QueryData();
+        var terms = [];
+        $.each(qd, function(i, item) {
+            terms.push(item.squish());
+        });
+        return terms.join(", ");
+    }
+
+    function getSearchTerms() {
+        var terms = getQueryString();
+        if (terms === "") {
+            terms = "obama, bush, clinton, the president";
+            addPageToHistory(terms);
+        }
         return terms;
     }
 
@@ -114,16 +130,6 @@ $(document).ready(function() {
         });
     }
 
-    function loadPage(terms) {
-        if (terms.length > 0) {
-            var baseUrl = window.location.href.split("?")[0];
-            var queryString = "?" + $.param({
-                "terms": terms
-            });
-            location.assign(baseUrl + queryString);
-        }
-    }
-
     function search(terms) {
         var data = [];
         var requests = [];
@@ -160,13 +166,13 @@ $(document).ready(function() {
         // "ENTER" key
         if (e.keyCode === 13) {
             console.log("hello");
-            loadPage($.trim($(":input[name=terms]").val()));
+            loadPage($(":input[name=terms]").val().squish());
         }
     });
 
     $("#enter").click(function(e) {
         e.preventDefault();
-        loadPage($.trim($(":input[name=terms]").val()));
+        loadPage($(":input[name=terms]").val().squish());
     });
 
     ///////////////////////////////////////////////////////////////////////////
