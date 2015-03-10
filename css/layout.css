@@ -44,3 +44,10 @@ input[name=terms] {
   height: 400px;
   margin: 0 auto;
 }
+.sitemap li {
+  display: inline;
+}
+.sitemap li:not(:last-child):after{
+  content:"|";
+  margin: 0 3px 0 7px;
+}
