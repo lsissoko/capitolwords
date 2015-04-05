@@ -15,17 +15,6 @@ $(document).ready(function() {
         }
     }
 
-    function addPageToHistory(terms) {
-        var pageObj = {
-            "html": window.location.href,
-            "pageTitle": ""
-        };
-        var url = window.location.href.split("?")[0] + "?" + $.param({
-            "terms": terms
-        });
-        window.history.pushState(pageObj, "", url);
-    }
-
     function getQueryString() {
         var qd = new QueryData();
         return (qd.terms !== undefined) ? qd.terms.squish() : "";
@@ -35,7 +24,7 @@ $(document).ready(function() {
         var terms = getQueryString();
         if (terms === "") {
             terms = "obama, bush, clinton, the president";
-            addPageToHistory(terms);
+            loadPage(terms);
         }
         return terms;
     }
