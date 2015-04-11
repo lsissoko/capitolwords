@@ -64,7 +64,6 @@ $(document).ready(function() {
   $(":input[name=terms]").keyup(function(e) {
     // "ENTER" key
     if (e.keyCode === 13) {
-      console.log("hello");
       loadPage($(":input[name=terms]").val().squish());
     }
   });
